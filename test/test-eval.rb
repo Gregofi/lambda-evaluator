@@ -26,6 +26,7 @@ class ExprTest < Minitest::Test
     evaled_expr = expr.eval()
     assert_equal(Identifier.new('y'), evaled_expr)
 
+    # Argument is something more complicated than identifier
     expr = Application.new(
             LambdaAbstraction.new(
                 Identifier.new('x'),
