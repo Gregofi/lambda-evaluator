@@ -18,13 +18,17 @@ class PipelineTest < Minitest::Test
     end
 
     def test_basic_parser_advanced
-        expr = "(\\ a . (\\ b . (\\ s . (\\ z . (a (s ( (b s) z )))))))"
+        # +
+        expr = "(\\ a . (\\ b . (\\ s . (\\ z . ((a s) ( (b s) z ))))))"
         evaled = evaluate(expr)
-        assert_equal("(λa. (λb. (λs. (λz. (a (s ((b s) z)))))))", evaled.to_s)
+        assert_equal("(λa. (λb. (λs. (λz. ((a s) ((b s) z))))))", evaled.to_s)
+        # 2
         n2 = "(\\ s . (\\ z . (s (s z))))"
+        # 3
         n3 = "(\\ s . (\\ z . (s (s (s z)))))"
+        # (+ 2 3)
         expr = "((#{expr} #{n2}) #{n3})"
         evaled = evaluate(expr)
-        puts evaled
+        assert_equal("(λs. (λz. (s (s (s (s (s z)))))))", evaled.to_s)
     end
 end
