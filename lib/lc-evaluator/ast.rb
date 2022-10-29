@@ -7,12 +7,11 @@ class Application
 
     def eval()
         if @function.is_a? LambdaAbstraction
-            return @function.apply(@argument)
+            @function.apply(@argument)
         elsif !@function.normal?
-            @function.eval
+            Application.new(@function.eval, @argument)
         else
-            @argument.eval()
-            return self
+            Application.new(@function, @argument.eval)
         end
     end
 
@@ -25,8 +24,9 @@ class Application
     end
 
     def replace(what, val)
-        @function.replace(what, val)
-        @argument.replace(what, val)
+        f = @function.replace(what, val)
+        a = @argument.replace(what, val)
+        Application.new(f, a)
     end
 
     def to_s = "(#{@function.to_s} #{@argument.to_s})"
@@ -47,13 +47,12 @@ class LambdaAbstraction
     def normal? = @expr.normal?
 
     def eval()
-        expr.eval()
-        return self
+        LambdaAbstraction.new(@parameter, @expr.eval())
     end
 
     def replace(what, val)
-        return if what == @parameter
-        @expr.replace(what, val)
+        return self if what == @parameter
+        LambdaAbstraction.new(@parameter, @expr.replace(what, val))
     end
 
     def to_s = "(λ#{@parameter}. #{@expr.to_s})"

@@ -40,7 +40,7 @@ class BasicParser
             end
             raise ArgumentError.new("Expected ')' to close lambda abstraction or application") if @input.shift != ')'
         else
-            raise ArgumentError.new("Identifier can only contain letters") if !c.match(/\w+/)
+            raise ArgumentError.new("Identifier can only contain letters, got '#{c}'") if !c.match(/\w+/)
             expr = Identifier.new(c)
         end
         expr
