@@ -20,6 +20,7 @@ class BasicParser
         input = input.gsub(')', ' ) ')
         input = input.gsub('(', ' ( ')
         input = input.gsub('\\', ' \\ ')
+        input = input.gsub('λ', ' \\ ')
         input = input.gsub('.', ' ')
         @input = input.split(' ')
     end
