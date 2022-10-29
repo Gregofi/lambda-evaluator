@@ -86,3 +86,18 @@ class Identifier
 
     def ==(other) = identifier == other.identifier
 end
+
+class Macro
+    def initialize(name, expr)
+        @expr = expr
+    end
+
+    def eval() = @expr
+
+    def normal? = false
+
+    def replace(what, val)
+    end
+
+    def to_s = @name
+end
