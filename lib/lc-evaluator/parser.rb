@@ -45,3 +45,53 @@ class BasicParser
     expr
   end
 end
+
+# Is used for parsing simpler LC syntax:
+# IDENTIFIER  -> [A-Z]+
+# ABSTRACTION -> (λ IDENTIFIER {IDENTIFIER}+ . EXPR)
+# APPLICATION -> EXPR EXPR {EXPR}+
+# PAREN       -> (EXPR)
+# EXPR        -> IDENTIFIER | ABSTRACTION | APPLICATION | PAREN
+#
+# This leads to prettier syntax : '(λ t f . t) a b' is equal to '(((λ t . (λ f . t)) a) b)'
+# Beware, application is left associative!
+#
+# Note: This guy is suffers from the same problems as BasicParser speed-wise
+class SimplerGrammarParser
+  def initialize(input)
+    input = input.gsub(')', ' ) ')
+    input = input.gsub('(', ' ( ')
+    input = input.gsub('\\', ' \\ ')
+    input = input.gsub('λ', ' \\ ')
+    input = input.gsub('.', ' . ')
+    @input = input.split(' ')
+  end
+
+  def ABSTRACTION
+    c = @input.shift
+    return S() if c == '.'
+    LambdaAbstraction.new(Identifier.new(c), ABSTRACTION())
+  end
+
+  def S
+    c = @input.shift
+    if c == '('
+      c = @input.shift
+      if c == '\\'
+        raise ArgumentError.new("Lambda abstraction must have at least one parameter.") if @input.first == '.'
+        expr = ABSTRACTION()
+      else
+        @input.unshift(c)
+        application = S()
+        argument = S()
+        expr = Application.new(application, argument)
+      end
+      raise ArgumentError, "Expected ')' to close lambda abstraction or application" if @input.shift != ')'
+    else
+      raise ArgumentError, "Identifier can only contain letters, got '#{c}'" unless c.match(/\w+/)
+
+      expr = Identifier.new(c)
+    end
+    expr
+  end
+end
