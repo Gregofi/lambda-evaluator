@@ -8,9 +8,19 @@ class Application
     def eval()
         if @function.is_a? LambdaAbstraction
             return @function.apply(@argument)
+        elsif !@function.normal?
+            @function.eval
         else
             @argument.eval()
             return self
+        end
+    end
+
+    def normal?
+        if @function.is_a? LambdaAbstraction
+            false
+        else
+            @function.normal? && @argument.normal?
         end
     end
 
@@ -34,6 +44,8 @@ class LambdaAbstraction
         return res
     end
 
+    def normal? = @expr.normal?
+
     def eval()
         expr.eval()
         return self
@@ -55,6 +67,8 @@ class Identifier
     end
 
     def eval() = self
+
+    def normal? = true
 
     def replace(what, val)
         raise ArgumentError.new("Expression to be replaced must be identifier, but is \"#{what}\"") if !what.is_a? Identifier
