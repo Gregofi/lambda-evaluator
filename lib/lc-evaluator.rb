@@ -1,15 +1,13 @@
-require "lc-evaluator/ast"
-require "lc-evaluator/parser"
+require 'lc-evaluator/ast'
+require 'lc-evaluator/parser'
 
 def single_step(input)
-    expr = BasicParser.new(input).S
-    return expr.eval
+  expr = BasicParser.new(input).S
+  expr.eval
 end
 
 def evaluate(input)
-    expr = BasicParser.new(input).S
-    while !expr.normal?
-        expr = expr.eval
-    end
-    return expr.to_s
+  expr = BasicParser.new(input).S
+  expr = expr.eval until expr.normal?
+  expr.to_s
 end
