@@ -9,7 +9,7 @@ end
 # Expr -> (Expr Expr)
 # Expr -> (λ [A-Z] . Expr)
 #
-# Note: This guy is terribly innefective but short and concise
+# Note: This guy is terribly innefective but short and concise.
 #       The LC expressions are often short anyway and the interpreter
 #       will take most time anyway
 class BasicParser
@@ -77,7 +77,7 @@ class SimplerGrammarParser
 
   # Returns either application or just expression if there is just one
   # x y -> returns application
-  # x   -> returns identifier
+  # x   -> returns expression 'x'
   def APPLICATION(prev)
     while @input.length != 0 && @input.first != ')'
       exp = EXPR()
