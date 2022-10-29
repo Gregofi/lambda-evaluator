@@ -5,7 +5,6 @@ require "lc-evaluator/parser"
 
 class PipelineTest < Minitest::Test
     def test_basic_parser
-        puts "\n"
         parser = BasicParser.new("((\\x . x) y)")
         p = parser.S
         evaled = p.eval()

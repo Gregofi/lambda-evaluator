@@ -22,7 +22,6 @@ class BasicParser
         input = input.gsub('\\', ' \\ ')
         input = input.gsub('.', ' ')
         @input = input.split(' ')
-        puts @input
     end
 
     def S

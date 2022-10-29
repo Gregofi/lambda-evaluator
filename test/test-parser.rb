@@ -9,7 +9,6 @@ class ExprTest < Minitest::Test
 
         parser = BasicParser.new("(x y)")
         expr = parser.S
-        puts expr
         assert_equal("(x y)", expr.to_s)
 
         parser = BasicParser.new("(\\x. y)")
