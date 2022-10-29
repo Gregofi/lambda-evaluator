@@ -15,6 +15,11 @@ class PipelineTest < Minitest::Test
 
         evaled = evaluate("(((\\t (\\ f . t) ) a) b)")
         assert_equal(evaled.to_s, "a")
+
+        evaled = single_step("(((\\t (\\ f . t) ) a) b)")
+        assert_equal(evaled.to_s, "((λf. a) b)")
+        evaled = single_step(evaled.to_s)
+        assert_equal(evaled.to_s, "a")
     end
 
     def test_basic_parser_advanced
