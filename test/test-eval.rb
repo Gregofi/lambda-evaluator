@@ -42,7 +42,7 @@ class ExprTest < Minitest::Test
         evaled_expr = expr.eval()
         assert_equal(Application.new(Identifier.new('y'), Identifier.new('z')).to_s, evaled_expr.to_s)
     end
-        
+
     def test_complicated_expressions
         expr = Application.new(
             Application.new(

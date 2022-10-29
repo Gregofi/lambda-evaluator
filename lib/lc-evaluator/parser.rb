@@ -57,6 +57,8 @@ end
 # Beware, application is left associative!
 #
 # Note: This guy is suffers from the same problems as BasicParser speed-wise
+#
+# TODO: Rewrite to proper LL(1) parser or use parser generator
 class SimplerGrammarParser
   def initialize(input)
     input = input.gsub(')', ' ) ')
@@ -69,28 +71,40 @@ class SimplerGrammarParser
 
   def ABSTRACTION
     c = @input.shift
-    return S() if c == '.'
+    return APPLICATION(EXPR()) if c == '.'
     LambdaAbstraction.new(Identifier.new(c), ABSTRACTION())
   end
 
-  def S
-    c = @input.shift
-    if c == '('
-      c = @input.shift
-      if c == '\\'
-        raise ArgumentError.new("Lambda abstraction must have at least one parameter.") if @input.first == '.'
-        expr = ABSTRACTION()
-      else
-        @input.unshift(c)
-        application = S()
-        argument = S()
-        expr = Application.new(application, argument)
-      end
-      raise ArgumentError, "Expected ')' to close lambda abstraction or application" if @input.shift != ')'
-    else
-      raise ArgumentError, "Identifier can only contain letters, got '#{c}'" unless c.match(/\w+/)
+  # Returns either application or just expression if there is just one
+  # x y -> returns application
+  # x   -> returns identifier
+  def APPLICATION(prev)
+    while @input.length != 0 && @input.first != ')'
+      exp = EXPR()
+      prev = Application.new(prev, exp)
+    end
+    prev
+  end
 
-      expr = Identifier.new(c)
+  def S
+    first = EXPR()
+    return first if @input.length == 0
+    APPLICATION(first)
+  end
+
+  def EXPR # -> LambdaExpression
+    if @input.first != '('
+      expr = Identifier.new(@input.shift)
+    else
+      @input.shift
+      if @input.first == '\\'
+        @input.shift
+        expr = ABSTRACTION()
+        raise ArgumentError.new("Expected ')' to close lambda abstraction") unless @input.shift == ')' # Eat the ending ')'
+      else
+        expr = APPLICATION(EXPR())
+        @input.shift # Eat the ending ')'
+      end
     end
     expr
   end
