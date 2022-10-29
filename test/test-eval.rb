@@ -59,6 +59,6 @@ class ExprTest < Minitest::Test
         )
         assert(!expr.normal?)
         evaled_expr = expr.eval()
-        puts evaled_expr
+        assert_equal("((λf. a) b)", evaled_expr.to_s)
     end
 end
