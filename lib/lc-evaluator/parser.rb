@@ -17,10 +17,10 @@ end
 #       will take most time anyway
 class BasicParser
     def initialize(input)
-        input = input.sub('(', ' ( ')
-        input = input.sub(')', ' ) ')
-        input = input.sub('\\', '\\ ')
-        input = input.sub('.', '')
+        input = input.gsub(')', ' ) ')
+        input = input.gsub('(', ' ( ')
+        input = input.gsub('\\', ' \\ ')
+        input = input.gsub('.', ' ')
         @input = input.split(' ')
         puts @input
     end
@@ -30,7 +30,7 @@ class BasicParser
         if (c == '(')
             c = @input.shift
             if (c == "\\")
-                param = @input.shift
+                param = Identifier.new(@input.shift)
                 body  = S()
                 expr = LambdaAbstraction.new(param, body)
             else
