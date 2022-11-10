@@ -50,8 +50,9 @@ T := (\\t. (\\f. t));
         evaled = single_step(expr)
         evaled = evaled.eval()
         evaled = evaled.eval()
-        # evaled = evaled.eval()
-        # assert_equal("(λt. (λf. f))", evaled.to_s)
+        evaled = evaled.eval()
+      # Needs alpha conversion
+      # assert_equal("(λt. (λf. f))", evaled.to_s)
 
         expr = "
 ADD := (\\a. (\\b. (\\s. (\\z. ((a s) ( (b s) z ))))));

@@ -90,6 +90,7 @@ class SimplerGrammarParser
     input = input.gsub('λ', ' \\ ')
     input = input.gsub('.', ' . ')
     @input = input.split(' ')
+    @macros = Hash.new
   end
 
   def ABSTRACTION
@@ -102,11 +103,24 @@ class SimplerGrammarParser
   # x y -> returns application
   # x   -> returns expression 'x'
   def APPLICATION(prev)
-    while @input.length != 0 && @input.first != ')'
+    while @input.length != 0 && @input.first != ')' && @input.first != ';'
       exp = EXPR()
       prev = Application.new(prev, exp)
     end
     prev
+  end
+
+  def TOP
+    if @input.length > 1 && @input[1] == ':='
+      name = @input.shift
+      @input.shift # For ':='
+      @macros[name] = S()
+      s = @input.shift
+      raise "Expected ';' at the end of macro definition, got '#{s}'" unless s == ';'
+      TOP()
+    else
+      S()
+    end
   end
 
   def S
