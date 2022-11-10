@@ -98,7 +98,7 @@ class Macro
     def normal? = false
 
     def replace(what, val)
-        # No-op
+        self
     end
 
     def to_s = @name

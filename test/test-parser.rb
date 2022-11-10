@@ -60,9 +60,9 @@ end
 
 class MacroTest < Minitest::Test
     def test_macro
-        parsed = BasicParser.new("IDENTITY := (\ x . x); (IDENTITY x)").TOP
+        parsed = BasicParser.new("IDENTITY := (\\x. x); (IDENTITY x)").TOP
         assert_equal("(IDENTITY x)", parsed.to_s)
-        parsed = BasicParser.new("IDENTITY := (\ x . x); ADD := y; x").TOP
+        parsed = BasicParser.new("IDENTITY := (\\x. x); ADD := y; x").TOP
         assert_equal("x", parsed.to_s)
         parsed = BasicParser.new("X := x; Y := y; (X Y)").TOP
         assert_equal("(X Y)", parsed.to_s)
