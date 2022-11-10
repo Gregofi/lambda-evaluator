@@ -36,4 +36,35 @@ class PipelineTest < Minitest::Test
         evaled = evaluate(expr)
         assert_equal("(λs. (λz. (s (s (s (s (s z)))))))", evaled.to_s)
     end
+
+    def test_basic_parser_macros
+        expr = "IDENTITY := (\\ x . x ); (IDENTITY y)"
+        evaled = evaluate(expr)
+        assert_equal("y", evaled.to_s)
+
+        expr = "
+IDENTITY := (\\ x . x); 
+NOT := (\\x. (\\t. (\\f.((x f) t)))); 
+T := (\\t. (\\f. t));
+(NOT T)"
+        evaled = single_step(expr)
+        evaled = evaled.eval()
+        evaled = evaled.eval()
+        # evaled = evaled.eval()
+        assert_equal("(λt. (λf. f))", evaled.to_s)
+
+        expr = "
+ADD := (\\ a . (\\ b . (\\ s . (\\ z . ((a s) ( (b s) z ))))));
+2   := (\\ s . (\\ z . (s (s z))));
+3   := (\\ s . (\\ z . (s (s z)))); 
+((ADD 2) 3)"
+        puts expr
+        evaled = single_step(expr)
+        puts evaled
+        evaled = single_step(expr)
+        puts evaled
+        evaled = single_step(expr)
+        puts evaled
+        assert_equal("(λs. (λz. (s (s (s (s (s z)))))))", evaled.to_s)
+    end
 end

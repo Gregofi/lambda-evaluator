@@ -90,6 +90,7 @@ end
 class Macro
     def initialize(name, expr)
         @expr = expr
+        @name = name
     end
 
     def eval() = @expr
@@ -97,6 +98,7 @@ class Macro
     def normal? = false
 
     def replace(what, val)
+        # No-op
     end
 
     def to_s = @name

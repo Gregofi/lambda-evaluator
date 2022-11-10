@@ -57,3 +57,14 @@ class AdvancedParser < Minitest::Test
         assert_equal("(λa. (λb. (λs. (λz. ((a s) ((b s) z))))))", parsed.to_s)
     end
 end
+
+class MacroTest < Minitest::Test
+    def test_macro
+        parsed = BasicParser.new("IDENTITY := (\ x . x); (IDENTITY x)").TOP
+        assert_equal("(IDENTITY x)", parsed.to_s)
+        parsed = BasicParser.new("IDENTITY := (\ x . x); ADD := y; x").TOP
+        assert_equal("x", parsed.to_s)
+        parsed = BasicParser.new("X := x; Y := y; (X Y)").TOP
+        assert_equal("(X Y)", parsed.to_s)
+    end
+end

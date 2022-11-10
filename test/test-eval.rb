@@ -61,4 +61,12 @@ class ExprTest < Minitest::Test
         evaled_expr = expr.eval()
         assert_equal("((λf. a) b)", evaled_expr.to_s)
     end
+
+
+    def test_macros
+        expr = Application.new(Macro.new("IDENTITY", LambdaAbstraction.new(Identifier.new('x'), Identifier.new('x'))), Identifier.new('y'))
+        assert(!expr.normal?)
+        evaled_expr = expr.eval()
+        assert_equal("((λx. x) y)", evaled_expr.to_s)
+    end
 end

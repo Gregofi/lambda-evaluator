@@ -13,13 +13,34 @@ end
 #       The LC expressions are often short anyway and the interpreter
 #       will take most time anyway
 class BasicParser
+  attr_reader :macros
+
   def initialize(input)
     input = input.gsub(')', ' ) ')
     input = input.gsub('(', ' ( ')
+    input = input.gsub(':=', ' := ')
+    input = input.gsub(';', ' ; ')
     input = input.gsub('\\', ' \\ ')
     input = input.gsub('λ', ' \\ ')
     input = input.gsub('.', ' ')
     @input = input.split(' ')
+    @macros = Hash.new
+  end
+
+  # Special nonterminal symbol for top because top can contain macros
+  def TOP
+    if @input.length > 1 && @input[1] == ':='
+        name = @input.shift
+        raise ArgumentError, "Identifier or macro names can only contain letters, got '#{name}'" unless name.match(/\w+/)
+        @input.shift # Get rid of ':='
+        expr = S()
+        @macros[name] = Macro.new(name, expr)
+        # Parse TOP Until non macro statement occurs
+        @input.shift # Get rid of ';'
+        TOP()
+    else
+        S()
+    end
   end
 
   def S
@@ -38,9 +59,11 @@ class BasicParser
       end
       raise ArgumentError, "Expected ')' to close lambda abstraction or application" if @input.shift != ')'
     else
-      raise ArgumentError, "Identifier can only contain letters, got '#{c}'" unless c.match(/\w+/)
-
-      expr = Identifier.new(c)
+      if @macros.key?(c)
+        expr = @macros[c]
+      else
+        expr = Identifier.new(c)
+      end
     end
     expr
   end
