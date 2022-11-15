@@ -21,6 +21,11 @@ class Application
     end
 
     def perform_alpha(id, val)
+        
+    end
+
+    def args()
+        @function.args().merge @argument.args()
     end
 
     def normal?
@@ -56,7 +61,16 @@ class LambdaAbstraction
         @expr.get_free_vars(bound.add(@parameter))
     end
 
-    def perform_alpha()
+    def args()
+        Set[@parameter].merge @expr.args()
+    end
+
+    def perform_alpha(vals)
+        expr = @expr.perform_alpha(vals)
+        if vals.include?(@identifier)
+            expr = expr.replace(@identifier, @identifier + "1")
+        end
+        expr
     end
 
     def normal? = @expr.normal?
@@ -89,6 +103,8 @@ class Identifier
             Set[@identifier]
         end
     end
+
+    def args?() = Set[]
 
     def perform_alpha()
     end
@@ -126,6 +142,8 @@ class Macro
     end
 
     def normal? = false
+
+    def args() = Set[]
 
     def replace(what, val)
         self

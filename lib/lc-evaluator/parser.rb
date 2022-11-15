@@ -24,22 +24,26 @@ class BasicParser
     input = input.gsub('λ', ' \\ ')
     input = input.gsub('.', ' ')
     @input = input.split(' ')
-    @macros = Hash.new
+    @macros = {}
   end
 
   # Special nonterminal symbol for top because top can contain macros
   def TOP
     if @input.length > 1 && @input[1] == ':='
-        name = @input.shift
-        raise ArgumentError, "Identifier or macro names can only contain letters, got '#{name}'" unless name.match(/\w+/)
-        @input.shift # Get rid of ':='
-        expr = S()
-        @macros[name] = Macro.new(name, expr)
-        # Parse TOP Until non macro statement occurs
-        @input.shift # Get rid of ';'
-        TOP()
+      name = @input.shift
+      unless name.match(/\w+/)
+        raise ArgumentError,
+              "Identifier or macro names can only contain letters, got '#{name}'"
+      end
+
+      @input.shift # Get rid of ':='
+      expr = S()
+      @macros[name] = Macro.new(name, expr)
+      # Parse TOP Until non macro statement occurs
+      @input.shift # Get rid of ';'
+      TOP()
     else
-        S()
+      S()
     end
   end
 
@@ -59,11 +63,11 @@ class BasicParser
       end
       raise ArgumentError, "Expected ')' to close lambda abstraction or application" if @input.shift != ')'
     else
-      if @macros.key?(c)
-        expr = @macros[c]
-      else
-        expr = Identifier.new(c)
-      end
+      expr = if @macros.key?(c)
+               @macros[c]
+             else
+               Identifier.new(c)
+             end
     end
     expr
   end
@@ -90,12 +94,13 @@ class SimplerGrammarParser
     input = input.gsub('λ', ' \\ ')
     input = input.gsub('.', ' . ')
     @input = input.split(' ')
-    @macros = Hash.new
+    @macros = {}
   end
 
   def ABSTRACTION
     c = @input.shift
     return APPLICATION(EXPR()) if c == '.'
+
     LambdaAbstraction.new(Identifier.new(c), ABSTRACTION())
   end
 
@@ -117,6 +122,7 @@ class SimplerGrammarParser
       @macros[name] = S()
       s = @input.shift
       raise "Expected ';' at the end of macro definition, got '#{s}'" unless s == ';'
+
       TOP()
     else
       S()
@@ -126,6 +132,7 @@ class SimplerGrammarParser
   def S
     first = EXPR()
     return first if @input.length == 0
+
     APPLICATION(first)
   end
 
@@ -137,7 +144,7 @@ class SimplerGrammarParser
       if @input.first == '\\'
         @input.shift
         expr = ABSTRACTION()
-        raise ArgumentError.new("Expected ')' to close lambda abstraction") unless @input.shift == ')' # Eat the ending ')'
+        raise ArgumentError, "Expected ')' to close lambda abstraction" unless @input.shift == ')' # Eat the ending ')'
       else
         expr = APPLICATION(EXPR())
         @input.shift # Eat the ending ')'
