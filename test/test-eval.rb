@@ -14,7 +14,7 @@ class ExprTest < Minitest::Test
     assert_equal(Identifier.new('y'), expr)
 
     expr = Application.new(Identifier.new('x'), Identifier.new('y'))
-    assert_equals(Set['x', 'y'], expr.get_free_vars)
+    assert_equal(Set['x', 'y'], expr.get_free_vars)
     assert(expr.normal?)
     evaled_expr = expr.eval
     # Should do nothing
