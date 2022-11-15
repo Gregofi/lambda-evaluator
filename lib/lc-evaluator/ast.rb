@@ -20,8 +20,8 @@ class Application
 		@function.get_free_vars(bound).merge @argument.get_free_vars(bound)
 	end
 
-	def perform_alpha(id, val)
-
+	def perform_alpha(args)
+		Application.new(@function.perform_alpha(args), @argument.perform_alpha(args))
 	end
 
 	def args()
@@ -67,8 +67,9 @@ class LambdaAbstraction
 
 	def perform_alpha(vals)
 		expr = @expr.perform_alpha(vals)
-		if vals.include?(@identifier)
-			expr = expr.replace(@identifier, @identifier + "1")
+		identifier = @parameter.identifier
+		if vals.include?(identifier)
+			expr = expr.replace(identifier, identifier + "x")
 		end
 		expr
 	end
@@ -106,7 +107,8 @@ class Identifier
 
 	def args?() = Set[]
 
-	def perform_alpha()
+	def perform_alpha(args)
+		# no-op
 	end
 
 	def normal? = true
@@ -127,27 +129,27 @@ class Identifier
 	end
 
 	def ==(other) = identifier == other.identifier
+end
+
+class Macro
+	def initialize(name, expr)
+		@expr = expr
+		@name = name
 	end
 
-	class Macro
-		def initialize(name, expr)
-			@expr = expr
-			@name = name
-		end
+	def eval() = @expr
 
-		def eval() = @expr
-
-		def get_free_vars(bound = Set[])
-			Set[]
-		end
-
-		def normal? = false
-
-		def args() = Set[]
-
-		def replace(what, val)
-			self
-		end
-
-		def to_s = @name
+	def get_free_vars(bound = Set[])
+		Set[]
 	end
+
+	def normal? = false
+
+	def args() = Set[]
+
+	def replace(what, val)
+		self
+	end
+
+	def to_s = @name
+end
