@@ -1,17 +1,20 @@
 require "minitest/autorun"
 require "lc-evaluator/ast"
+require 'set'
 
 class ExprTest < Minitest::Test
   def test_basic_eval
     expr = Identifier.new('y')
     expr.eval()
     assert_equal(Identifier.new('y'), expr)
+    assert_equal(Set['y'], expr.get_free_vars())
     expr_rep = expr.replace(Identifier.new('y'), Identifier.new('z'))
     assert_equal(Identifier.new('z'), expr_rep)
     # Check that replace doesn't mutate
     assert_equal(Identifier.new('y'), expr)
 
     expr = Application.new(Identifier.new('x'), Identifier.new('y'))
+    assert_equals(Set['x', 'y'], expr.get_free_vars())
     assert(expr.normal?)
     evaled_expr = expr.eval()
     # Should do nothing
@@ -24,6 +27,7 @@ class ExprTest < Minitest::Test
                 Identifier.new('x')
             ),
             Identifier.new('y'))
+    assert_equal(Set['y'], expr.get_free_vars())
     assert(!expr.normal?)
     evaled_expr = expr.eval()
     assert(evaled_expr.normal?)

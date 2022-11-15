@@ -1,3 +1,4 @@
+require 'set'
 
 class Application
     def initialize(function, argument)
@@ -13,6 +14,13 @@ class Application
         else
             Application.new(@function, @argument.eval)
         end
+    end
+    
+    def get_free_vars(bound = Set[])
+        @function.get_free_vars(bound).merge @argument.get_free_vars(bound)
+    end
+
+    def perform_alpha(id, val)
     end
 
     def normal?
@@ -44,6 +52,13 @@ class LambdaAbstraction
         return res
     end
 
+    def get_free_vars(bound = Set[])
+        @expr.get_free_vars(bound.add(@parameter))
+    end
+
+    def perform_alpha()
+    end
+
     def normal? = @expr.normal?
 
     def eval()
@@ -66,6 +81,17 @@ class Identifier
     end
 
     def eval() = self
+
+    def get_free_vars(bound = Set[])
+        if bound.include?(@identifier)
+            Set[]
+        else
+            Set[@identifier]
+        end
+    end
+
+    def perform_alpha()
+    end
 
     def normal? = true
 
@@ -94,6 +120,10 @@ class Macro
     end
 
     def eval() = @expr
+
+    def get_free_vars(bound = Set[])
+        Set[]
+    end
 
     def normal? = false
 
