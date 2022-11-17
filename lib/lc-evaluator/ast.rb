@@ -28,9 +28,7 @@ class Application
 		@function.get_free_vars(bound).merge @argument.get_free_vars(bound)
 	end
 
-	def perform_alpha(args)
-		Application.new(@function.perform_alpha(args), @argument.perform_alpha(args))
-	end
+	def perform_alpha(args) = Application.new(@function.perform_alpha(args), @argument.perform_alpha(args))
 
 	def args()
 		@function.args().merge @argument.args()
@@ -65,9 +63,7 @@ class LambdaAbstraction
 		return res
 	end
 
-	def get_free_vars(bound = Set[])
-		@expr.get_free_vars(bound.add(@parameter.identifier))
-	end
+	def get_free_vars(bound = Set[]) = @expr.get_free_vars(bound.add(@parameter.identifier))
 
 	def args()
 		Set[@parameter.identifier].merge @expr.args()
@@ -90,9 +86,7 @@ class LambdaAbstraction
 
 	def normal? = @expr.normal?
 
-	def eval()
-		LambdaAbstraction.new(@parameter, @expr.eval())
-	end
+	def eval() = LambdaAbstraction.new(@parameter, @expr.eval())
 
 	def replace(what, val)
 		return self if what == @parameter
@@ -121,9 +115,7 @@ class Identifier
 
 	def args() = Set[]
 
-	def perform_alpha(args)
-		self
-	end
+	def perform_alpha(args) = self
 
 	def normal? = true
 
@@ -138,9 +130,7 @@ class Identifier
 
 	def to_s = @identifier.to_s
 
-	def eql?(other)
-		@identifier.eql?(other.identifier)
-	end
+	def eql?(other) = @identifier.eql?(other.identifier)
 
 	def ==(other) = identifier == other.identifier
 end
@@ -153,17 +143,13 @@ class Macro
 
 	def eval() = @expr
 
-	def get_free_vars(bound = Set[])
-		@expr.get_free_vars(bound)
-	end
+	def get_free_vars(bound = Set[]) = @expr.get_free_vars(bound)
 
 	def normal? = false
 
 	def args() = Set[]
 
-	def replace(what, val)
-		self
-	end
+	def replace(what, val) = self
 
 	def to_s = @name
 end
