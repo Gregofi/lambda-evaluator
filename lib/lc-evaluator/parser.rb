@@ -119,7 +119,7 @@ class SimplerGrammarParser
     if @input.length > 1 && @input[1] == ':='
       name = @input.shift
       @input.shift # For ':='
-      @macros[name] = S()
+      @macros[name] = Macro.new(name, S())
       s = @input.shift
       raise "Expected ';' at the end of macro definition, got '#{s}'" unless s == ';'
 
@@ -138,7 +138,12 @@ class SimplerGrammarParser
 
   def EXPR # -> LambdaExpression
     if @input.first != '('
-      expr = Identifier.new(@input.shift)
+      id = @input.shift
+      if @macros.key?(id)
+        expr = @macros[id]
+      else
+        expr = Identifier.new(id)
+      end
     else
       @input.shift
       if @input.first == '\\'
