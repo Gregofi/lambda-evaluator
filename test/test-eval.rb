@@ -75,4 +75,5 @@ class ExprTest < Minitest::Test
     evaled_expr = expr.eval
     assert_equal('((λx. x) y)', evaled_expr.to_s)
   end
+
 end

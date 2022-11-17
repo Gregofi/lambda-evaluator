@@ -1,5 +1,7 @@
 require 'set'
 
+$seq_num_uniq = 0
+
 class Application
 	def initialize(function, argument)
 		@function = function
@@ -8,7 +10,13 @@ class Application
 
 	def eval()
 		if @function.is_a? LambdaAbstraction
-			@function.apply(@argument)
+			# Check if alpha needs to be done
+			free_vars = @argument.get_free_vars()
+			if @function.args().disjoint?(free_vars)
+				@function.apply(@argument)
+			else
+				return Application.new(@function.perform_alpha(free_vars), @argument)
+			end
 		elsif !@function.normal?
 			Application.new(@function.eval, @argument)
 		else
@@ -62,16 +70,22 @@ class LambdaAbstraction
 	end
 
 	def args()
-		Set[@parameter].merge @expr.args()
+		Set[@parameter.identifier].merge @expr.args()
 	end
 
 	def perform_alpha(vals)
 		expr = @expr.perform_alpha(vals)
+		
+		num_id = $seq_num_uniq
+		$seq_num_uniq += 1
+
 		identifier = @parameter.identifier
 		if vals.include?(identifier)
-			expr = expr.replace(identifier, identifier + "x")
+			expr = expr.replace(@parameter, Identifier.new(identifier + "#{num_id}"))
+			LambdaAbstraction.new(Identifier.new(identifier + "#{num_id}"), expr)
+		else
+			LambdaAbstraction.new(@parameter, expr)
 		end
-		expr
 	end
 
 	def normal? = @expr.normal?
@@ -105,10 +119,10 @@ class Identifier
 		end
 	end
 
-	def args?() = Set[]
+	def args() = Set[]
 
 	def perform_alpha(args)
-		# no-op
+		self
 	end
 
 	def normal? = true
@@ -140,7 +154,7 @@ class Macro
 	def eval() = @expr
 
 	def get_free_vars(bound = Set[])
-		Set[]
+		@expr.get_free_vars(bound)
 	end
 
 	def normal? = false
