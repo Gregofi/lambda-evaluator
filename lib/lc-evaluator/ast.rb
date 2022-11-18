@@ -147,6 +147,10 @@ class Macro
 
 	def normal? = false
 
+    def perform_alpha(free_vars)
+      self
+    end
+
 	def args() = Set[]
 
 	def replace(what, val) = self

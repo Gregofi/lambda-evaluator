@@ -10,15 +10,17 @@ $default_macros = %{
 3 := (\\ s z . s (s (s z)));
 4 := (\\ s z . s (s (s (s z))));
 5 := (\\ s z . s (s (s (s (s z)))));
-ADD := (\\ x y s z . x s (y s z));
-MUL := (\\ x y s . x (y s));
++ := (\\ x y s z . x s (y s z));
+* := (\\ x y s . x (y s));
+DEC := (\\ x s z . x (\\ f g . g (f s)) (\\ g . z) (\\ u . u));
 T := (\\ t f . t);
 F := (\\ t f . f);
 NOT := (\\ x . x F T);
 OR  := (\\ x y . x T y);
 AND := (\\ x y . x y F);
 Y := (\\ f . (\\ x . f (x x)) (\\ x . f (x x)));
-ZERO? := (\\ n . n (\\ x . T F));
+ZERO? := (\\ n . n (\\ x . F) T);
+
 }.freeze()
 
 # Expects input to not contain any macros!
@@ -82,17 +84,19 @@ def main()
 
     opts.on("-h", "--help", "Prints help") do
       puts opts
+      print "\nThese are default macros that you can use without defining them:"
+      puts $default_macros
       exit
     end
 
-    opts.on("-f", "--file", "Input file with lambda code") do |v|
+    opts.on("-f", "--file F", "Input file with lambda code") do |v|
       file = v
     end
   end.parse!
 
   if file != nil
     input = File.read(file)
-    print(eval_file(input))
+    puts eval_file(input, parser)
   else
     Repl(parser);
   end
