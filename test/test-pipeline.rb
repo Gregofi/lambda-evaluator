@@ -41,7 +41,6 @@ class PipelineTest < Minitest::Test
     expr = '( (\\x . (\\ y . (x y))) y)'
     evaled = evaluate(expr)
     assert(evaled != '(λy. (y y))')
-    puts evaled
   end
 
   def test_basic_parser_macros
