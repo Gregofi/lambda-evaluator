@@ -17,6 +17,8 @@ NOT T
 There are some standard macros defined which you can use, like first 5 numbers, Y-combinator, logical operators and so on.
 Use `-h` to see all.
 
+For the lambda symbol, use either `λ` or `\`. If you use this as a library, you must escape the backslash (example call in ruby: `evaluate("(\\x.x)")`).
+
 ## How to build
 Run following commands in the root directory of the project:
 ```
