@@ -1,0 +1,2 @@
+FACT := (\ f n . ZERO? n 1 (* n (f (DEC n))));
+Y FACT 4
